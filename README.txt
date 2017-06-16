@@ -19,3 +19,8 @@
 	- class rotate block
 	- class calculate score
  
+
+==== source ====
+https://www.w3schools.com/jquery/
+https://api.jquery.com/
+https://developer.mozilla.org/en-US/docs/Web/CSS/Reference
