@@ -14,6 +14,8 @@ $(document).ready(function(){
 	var blocks = [];
 	var groupBlocks = [];
 
+	colorList = ["blue","yellow","red","orange","pink","green","cyan","BlueViolet"];
+
 	//create table
 	for(var i=0;i<360;i+=30){
 		for(var j=0;j<540;j+=30){
@@ -78,7 +80,6 @@ $(document).ready(function(){
 			this.group.push(Blc2);
 			this.group.push(Blc3);
 			this.group.push(Blc4);
-			groupBlocks.push(this.group);
 		}
 		//sqr
 		if(this.type === 2){
@@ -90,7 +91,6 @@ $(document).ready(function(){
 			this.group.push(Blc2);
 			this.group.push(Blc3);
 			this.group.push(Blc4);
-			groupBlocks.push(this.group);
 		}
 		//T
 		if(this.type === 3){
@@ -102,7 +102,6 @@ $(document).ready(function(){
 			this.group.push(Blc2);
 			this.group.push(Blc3);
 			this.group.push(Blc4);
-			groupBlocks.push(this.group);
 		}
 		//L
 		if(this.type === 4){
@@ -114,7 +113,6 @@ $(document).ready(function(){
 			this.group.push(Blc2);
 			this.group.push(Blc3);
 			this.group.push(Blc4);
-			groupBlocks.push(this.group);
 		}
 		//Z
 		if(this.type === 5){
@@ -126,7 +124,6 @@ $(document).ready(function(){
 			this.group.push(Blc2);
 			this.group.push(Blc3);
 			this.group.push(Blc4);
-			groupBlocks.push(this.group);
 		}
 		this.state = function(){
 			for(var i=0;i<this.group.length;i++){
@@ -137,9 +134,6 @@ $(document).ready(function(){
 			return 0;
 		}
 		this.fall = function(){
-			setTimeout(function() {
-  				var a = 1;
-			}, 1000)
 			if(this.state() === 0){
 				for(var i=0;i<this.group.length;i++){
 					this.group[i].fall();
@@ -150,6 +144,7 @@ $(document).ready(function(){
 					blocks.push(this.group[i]);
 				}
 				groupBlocks.splice(0,1);
+				genBlock();
 			}
 		}
 		this.draw = function(){
@@ -161,12 +156,28 @@ $(document).ready(function(){
 
 
 	//Fumctions
-	function OneBlockFall(obj){
-		obj.y+=30;
+	function genBlock(){
+		var type = RandomNum(1,5);
+		var pos = 0;
+		if(type === 1){
+			pos = RandomNum(0,8)*30;
+		}
+		else{
+			pos = RandomNum(0,9)*30;
+		}
+		var color = colorList[RandomNum(0,colorList.length)];
+		var newBlock = new blockGroup(color,type,pos);
+		groupBlocks.push(newBlock);
+	}
+
+	function RandomNum(min,max){
+		return Math.floor(Math.random()*(max-min+1))+min;
 	}
 
 	//Test
-	var a = new blockGroup("red",3,150);
+	//var a = new blockGroup("red",3,150);
+	genBlock();
+
 
 	// MAIN()
 	function loop(){
@@ -174,8 +185,11 @@ $(document).ready(function(){
 		setTimeout(function(){
 			mainctx.fillStyle = 'rgba(0,0,0)';
 			mainctx.fillRect(0,0,360,540);
-			a.fall();
-			a.draw();
+			groupBlocks[0].fall();
+			groupBlocks[0].draw();
+			for(var i=0;i<blocks.length;i++){
+				blocks[i].draw();
+			}
 			//create table
 			for(var i=0;i<360;i+=30){
 				for(var j=0;j<540;j+=30){
@@ -186,7 +200,7 @@ $(document).ready(function(){
 				}
 			}
 			requestAnimationFrame(loop);
-		},1000);
+		},750);
 	}
 
 	loop();
