@@ -16,6 +16,8 @@
 	- class one block >>done
 	- class disappear
 	- class random gen next block >> done
+	- class kb input for move block >> done
+	- class comming block >> done
 	- class block fall >>done
 	- class increed block speed 
 	- class rotate block

@@ -12,11 +12,16 @@ $(document).ready(function(){
 	next.width = 180;
 
 	var blocks = [];
+	var Next = [];
 	var groupBlocks = [];
 
-	colorList = ["blue","yellow","red","orange","pink","green","cyan","BlueViolet"];
+	var state = 0;
+	var nextBlock;
+	var nextBlockShow;
 
-	//create table
+	colorList = ["blue","yellow","red","DarkOrange","GreenYellow","cyan","DarkMagenta"];
+
+	//create table	
 	for(var i=0;i<360;i+=30){
 		for(var j=0;j<540;j+=30){
 			mainctx.beginPath();
@@ -51,6 +56,15 @@ $(document).ready(function(){
 			}
 			return 0;
 		}
+		this.sideState = function(){
+			if(this.x >=330){
+				return 1;
+			}
+			if(this.x <= 0){
+				return 2;
+			}
+			return 0;
+		}
 		this.fall = function(){
 			if(this.state() === 0){
 				this.y+=30;
@@ -62,6 +76,23 @@ $(document).ready(function(){
 			mainctx.fillStyle = this.color;
 			mainctx.fill();
 			mainctx.fillStyle = "black";
+		}
+		this.drawNext = function(){
+			nextctx.beginPath();
+			nextctx.rect(this.x,this.y,30,30);
+			nextctx.fillStyle = this.color;
+			nextctx.fill();
+			nextctx.fillStyle = "black";
+		}
+		this.leftMove = function(){
+			if(this.sideState() !== 2){
+				this.x-=30;
+			}
+		}
+		this.rightMove = function(){
+			if(this.sideState() !== 1){
+				this.x+=30;
+			}
 		}
 	}
 
@@ -133,6 +164,17 @@ $(document).ready(function(){
 			}
 			return 0;
 		}
+		this.sideState = function(){
+			for(var i=0;i<this.group.length;i++){
+				if(this.group[i].sideState() === 1){
+					return 1; 
+				}
+				if(this.group[i].sideState() === 2){
+					return 2;
+				}
+			}
+			return 0;
+		}
 		this.fall = function(){
 			if(this.state() === 0){
 				for(var i=0;i<this.group.length;i++){
@@ -152,11 +194,80 @@ $(document).ready(function(){
 				this.group[i].draw();
 			}
 		}
+		this.drawNext = function(){
+			this.pos = 30;
+			if(this.type === 1){
+				var Blc1 = new block(this.pos,60,this.color);
+				var Blc2 = new block(this.pos+30,60,this.color);
+				var Blc3 = new block(this.pos+60,60,this.color);
+				var Blc4 = new block(this.pos+90,60,this.color);
+			}
+			if(this.type === 2){
+				var Blc1 = new block(this.pos,60,this.color);
+				var Blc2 = new block(this.pos+30,60,this.color);
+				var Blc3 = new block(this.pos,30,this.color);
+				var Blc4 = new block(this.pos+30,30,this.color);
+			}
+			if(this.type === 3){
+				var Blc1 = new block(this.pos,60,this.color);
+				var Blc2 = new block(this.pos+30,60,this.color);
+				var Blc3 = new block(this.pos+60,60,this.color);
+				var Blc4 = new block(this.pos+30,30,this.color);
+			}
+			if(this.type === 4){
+				var Blc1 = new block(this.pos,60,this.color);
+				var Blc2 = new block(this.pos+30,60,this.color);
+				var Blc3 = new block(this.pos+60,60,this.color);
+				var Blc4 = new block(this.pos+60,30,this.color);
+			}
+			if(this.type === 5){
+				var Blc1 = new block(this.pos,30,this.color);
+				var Blc2 = new block(this.pos+30,30,this.color);
+				var Blc3 = new block(this.pos+30,60,this.color);
+				var Blc4 = new block(this.pos+60,60,this.color);
+			}
+			Blc1.drawNext();
+			Blc2.drawNext();
+			Blc3.drawNext();
+			Blc4.drawNext();
+		}
+		this.leftMove = function(){
+			if(this.sideState() !== 2){
+				for(var i=0;i<this.group.length;i++){
+					this.group[i].leftMove();
+				}
+			}
+		}
+		this.rightMove = function(){
+			if(this.sideState() !==1){
+				for(var i=0;i<this.group.length;i++){
+					this.group[i].rightMove();
+				}
+			}
+		}
 	}
 
 
 	//Fumctions
 	function genBlock(){
+		if(state === 0){
+			var type = RandomNum(1,5);
+			var pos = 0;
+			if(type === 1){
+				pos = RandomNum(0,8)*30;
+			}
+			else{
+				pos = RandomNum(0,9)*30;
+			}
+			var color = colorList[RandomNum(0,colorList.length-1)];
+			var newBlock = new blockGroup(color,type,pos);
+			groupBlocks.push(newBlock);
+			state = 1;
+		}
+		else{
+			var newBlock = nextBlock;
+			groupBlocks.push(newBlock);
+		}
 		var type = RandomNum(1,5);
 		var pos = 0;
 		if(type === 1){
@@ -165,15 +276,17 @@ $(document).ready(function(){
 		else{
 			pos = RandomNum(0,9)*30;
 		}
-		var color = colorList[RandomNum(0,colorList.length)];
-		var newBlock = new blockGroup(color,type,pos);
-		groupBlocks.push(newBlock);
+		var color = colorList[RandomNum(0,colorList.length-1)];
+		nextBlock = new blockGroup(color,type,pos);
+		nextBlockShow = new blockGroup(color,type,pos);
+
 	}
 
 	function RandomNum(min,max){
 		return Math.floor(Math.random()*(max-min+1))+min;
 	}
 
+	
 	//Test
 	//var a = new blockGroup("red",3,150);
 	genBlock();
@@ -183,6 +296,8 @@ $(document).ready(function(){
 	function loop(){
 		//reset canvas
 		setTimeout(function(){
+
+			//MAIN DISPLAY
 			mainctx.fillStyle = 'rgba(0,0,0)';
 			mainctx.fillRect(0,0,360,540);
 			groupBlocks[0].fall();
@@ -199,10 +314,43 @@ $(document).ready(function(){
 					mainctx.stroke();
 				}
 			}
+
+			//NEXT DISPLAY
+			nextctx.fillStyle = 'rgba(0,0,0)';
+			nextctx.fillRect(0,0,180,120);
+			nextBlockShow.drawNext();
+			for(var i=0;i<180;i+=30){
+				for(var j=0;j<120;j+=30){
+					nextctx.beginPath();
+					nextctx.rect(i,j,30,30);
+					nextctx.strokeStyle = "gray";
+					nextctx.stroke();
+				}
+			}
+
+
 			requestAnimationFrame(loop);
-		},750);
+		},100);
 	}
 
 	loop();
+	document.addEventListener('keydown',function(event){
+		//left
+		if(event.keyCode === 37){
+			console.log(groupBlocks[0].x);
+			groupBlocks[0].leftMove();	
+		}
+		//right
+		if(event.keyCode === 39){
+			groupBlocks[0].rightMove();
+		}
+		/*//up
+		if(event.keyCode === 38){
 
+		}
+		//down
+		if(event.keyCode === 40){
+
+		}*/
+	});
 });
