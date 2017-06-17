@@ -5,3 +5,33 @@ h1{
 	color: white;
 	text-align: center;
 }
+canvas{
+	border: solid white;
+}
+#main{
+	width: 360px;
+	height: 540px;
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%,0%);
+}
+#status{
+	width: 300px;
+	margin: 40px;
+	float: right;
+	border: solid white;
+}
+#show{
+	margin-left: 40px;
+	color: white;
+}
+#nextBlock{
+	width: 180px;
+	height: 120px;
+	display: block;
+	margin: 10px auto;
+}
+#score{
+	color: white;
+	text-align: center;
+}
