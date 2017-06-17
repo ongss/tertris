@@ -35,3 +35,16 @@ canvas{
 	color: white;
 	text-align: center;
 }
+@media screen and (max-width: 1150px) {
+    #main{
+    	left: 30%;
+    }
+}
+@media screen and (max-width: 800px) {
+    #status{
+    	display: none;
+    }
+    #main{
+    	left: 50%;
+    }
+}
