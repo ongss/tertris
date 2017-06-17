@@ -12,6 +12,8 @@ $(document).ready(function(){
 	next.width = 180;
 
 	var blocks = [];
+	var groupBlocks = [];
+
 	//create table
 	for(var i=0;i<360;i+=30){
 		for(var j=0;j<540;j+=30){
@@ -36,17 +38,19 @@ $(document).ready(function(){
 		this.x = x;
 		this.y = y;
 		this.color = color;
-		this.fall = function(){
-			this.state = 0;
+		this.state = function(){
 			for(var i=0;i<blocks.length;i++){
 				if(blocks[i].x === this.x && blocks[i].y === (this.y+30)) {
-					this.state = 1;
+					return 1;
 				}
 			}
 			if(this.y >=510){
-				this.state = 1;
+				return 1;
 			}
-			if(this.state===0){
+			return 0;
+		}
+		this.fall = function(){
+			if(this.state() === 0){
 				this.y+=30;
 			}
 		}
@@ -59,6 +63,102 @@ $(document).ready(function(){
 		}
 	}
 
+	function blockGroup(color,type,pos){
+		this.color = color;
+		this.type = type;
+		this.pos = pos;
+		this.group = [];
+		//long
+		if(this.type === 1){
+			var Blc1 = new block(this.pos,-30,this.color);
+			var Blc2 = new block(this.pos+30,-30,this.color);
+			var Blc3 = new block(this.pos+60,-30,this.color);
+			var Blc4 = new block(this.pos+90,-30,this.color);
+			this.group.push(Blc1);
+			this.group.push(Blc2);
+			this.group.push(Blc3);
+			this.group.push(Blc4);
+			groupBlocks.push(this.group);
+		}
+		//sqr
+		if(this.type === 2){
+			var Blc1 = new block(this.pos,-30,this.color);
+			var Blc2 = new block(this.pos+30,-30,this.color);
+			var Blc3 = new block(this.pos,-60,this.color);
+			var Blc4 = new block(this.pos+30,-60,this.color);
+			this.group.push(Blc1);
+			this.group.push(Blc2);
+			this.group.push(Blc3);
+			this.group.push(Blc4);
+			groupBlocks.push(this.group);
+		}
+		//T
+		if(this.type === 3){
+			var Blc1 = new block(this.pos,-30,this.color);
+			var Blc2 = new block(this.pos+30,-30,this.color);
+			var Blc3 = new block(this.pos+60,-30,this.color);
+			var Blc4 = new block(this.pos+30,-60,this.color);
+			this.group.push(Blc1);
+			this.group.push(Blc2);
+			this.group.push(Blc3);
+			this.group.push(Blc4);
+			groupBlocks.push(this.group);
+		}
+		//L
+		if(this.type === 4){
+			var Blc1 = new block(this.pos,-30,this.color);
+			var Blc2 = new block(this.pos+30,-30,this.color);
+			var Blc3 = new block(this.pos+60,-30,this.color);
+			var Blc4 = new block(this.pos+60,-60,this.color);
+			this.group.push(Blc1);
+			this.group.push(Blc2);
+			this.group.push(Blc3);
+			this.group.push(Blc4);
+			groupBlocks.push(this.group);
+		}
+		//Z
+		if(this.type === 5){
+			var Blc1 = new block(this.pos,-60,this.color);
+			var Blc2 = new block(this.pos+30,-60,this.color);
+			var Blc3 = new block(this.pos+30,-30,this.color);
+			var Blc4 = new block(this.pos+60,-30,this.color);
+			this.group.push(Blc1);
+			this.group.push(Blc2);
+			this.group.push(Blc3);
+			this.group.push(Blc4);
+			groupBlocks.push(this.group);
+		}
+		this.state = function(){
+			for(var i=0;i<this.group.length;i++){
+				if(this.group[i].state() === 1){
+					return 1; 
+				}
+			}
+			return 0;
+		}
+		this.fall = function(){
+			setTimeout(function() {
+  				var a = 1;
+			}, 1000)
+			if(this.state() === 0){
+				for(var i=0;i<this.group.length;i++){
+					this.group[i].fall();
+				}
+			}
+			else{
+				for(var i=0;i<this.group.length;i++){
+					blocks.push(this.group[i]);
+				}
+				groupBlocks.splice(0,1);
+			}
+		}
+		this.draw = function(){
+			for(var i=0;i<this.group.length;i++){
+				this.group[i].draw();
+			}
+		}
+	}
+
 
 	//Fumctions
 	function OneBlockFall(obj){
@@ -66,34 +166,27 @@ $(document).ready(function(){
 	}
 
 	//Test
-	var a = new block(150,-30,"red");
-	var b = new block(180,-30,"blue");
-	var c = new block(150,-60,"green");
-	blocks.push(a);
-	blocks.push(b);
-	blocks.push(c);
+	var a = new blockGroup("red",3,150);
 
 	// MAIN()
 	function loop(){
 		//reset canvas
-		mainctx.fillStyle = 'rgba(0,0,0)';
-		mainctx.fillRect(0,0,360,540);
-		a.draw();
-		a.fall();
-		b.draw();
-		b.fall();
-		c.draw();
-		c.fall();
-		//create table
-		for(var i=0;i<360;i+=30){
-			for(var j=0;j<540;j+=30){
-				mainctx.beginPath();
-				mainctx.rect(i,j,30,30);
-				mainctx.strokeStyle = "gray";
-				mainctx.stroke();
+		setTimeout(function(){
+			mainctx.fillStyle = 'rgba(0,0,0)';
+			mainctx.fillRect(0,0,360,540);
+			a.fall();
+			a.draw();
+			//create table
+			for(var i=0;i<360;i+=30){
+				for(var j=0;j<540;j+=30){
+					mainctx.beginPath();
+					mainctx.rect(i,j,30,30);
+					mainctx.strokeStyle = "gray";
+					mainctx.stroke();
+				}
 			}
-		}
-		requestAnimationFrame(loop);
+			requestAnimationFrame(loop);
+		},1000);
 	}
 
 	loop();

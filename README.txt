@@ -1,24 +1,26 @@
 << Create Tertris Project >>
 < html part >
-	- HEADER = " TERTRIS "
-	- showing score on the right side
-	- canvas for game display
-	- canvas for next block display
+	- HEADER = " TERTRIS " >> done
+	- showing score on the right side >>done
+	- canvas for game display >>done
+	- canvas for next block display >>done
+	- on display console
+	- gameover page
 < css part >
 	- all font style
 	- set all position
 	- color of block : light blue ,blue ,yellow ,red ,orange ,pink ,green 
 < js part > 
-	- game display size 12*20
-	- five kind of blocks
-	- class one block
+	- game display size 12*20 >>done
+	- five kind of blocks >>done
+	- class one block >>done
 	- class disappear
 	- class random gen next block
-	- class block fall
+	- class block fall >>done
 	- class increed block speed 
 	- class rotate block
 	- class calculate score
- 
+	- class reset game
 
 ==== source ====
 https://www.w3schools.com/jquery/
