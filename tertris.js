@@ -1,6 +1,8 @@
 $(document).ready(function(){
 
 	//Var
+	var game = document.getElementById("game");
+
 	var main = document.getElementById("main");
 	var mainctx = main.getContext("2d");
 	main.height = 540;
@@ -57,6 +59,16 @@ $(document).ready(function(){
 			return 0;
 		}
 		this.sideState = function(){
+			for(var i=0;i<blocks.length;i++){
+				if(blocks[i].y === this.y && blocks[i].x === (this.x-30)) {
+					return 2;
+				}
+			}
+			for(var i=0;i<blocks.length;i++){
+				if(blocks[i].y === this.y && blocks[i].x === (this.x+30)) {
+					return 1;
+				}
+			}
 			if(this.x >=330){
 				return 1;
 			}
@@ -165,13 +177,25 @@ $(document).ready(function(){
 			return 0;
 		}
 		this.sideState = function(){
+			var Ls = 0;
+			var Rs = 0;
 			for(var i=0;i<this.group.length;i++){
 				if(this.group[i].sideState() === 1){
-					return 1; 
+					Rs = 1; 
 				}
 				if(this.group[i].sideState() === 2){
-					return 2;
+					Ls = 1;
 				}
+			}
+			//console.log("Rs : ",Rs,"Ls : ",Ls);
+			if(Ls === 1 && Rs === 1){
+				return 3;
+			}
+			if(Ls === 1 && Rs === 0){
+				return 2;
+			}
+			if(Ls === 0 && Rs === 1){
+				return 1;
 			}
 			return 0;
 		}
@@ -183,6 +207,7 @@ $(document).ready(function(){
 			}
 			else{
 				for(var i=0;i<this.group.length;i++){
+					//console.log("x : ", this.group[i].x , "y : ",this.group[i].y);
 					blocks.push(this.group[i]);
 				}
 				groupBlocks.splice(0,1);
@@ -232,14 +257,14 @@ $(document).ready(function(){
 			Blc4.drawNext();
 		}
 		this.leftMove = function(){
-			if(this.sideState() !== 2){
+			if(this.sideState() !== 2 && this.sideState() !== 3){
 				for(var i=0;i<this.group.length;i++){
 					this.group[i].leftMove();
 				}
 			}
 		}
 		this.rightMove = function(){
-			if(this.sideState() !==1){
+			if(this.sideState() !==1 && this.sideState() !== 3){
 				for(var i=0;i<this.group.length;i++){
 					this.group[i].rightMove();
 				}
@@ -280,6 +305,17 @@ $(document).ready(function(){
 		nextBlock = new blockGroup(color,type,pos);
 		nextBlockShow = new blockGroup(color,type,pos);
 
+	}
+
+	function gameState(){
+		for(var i=0;i<blocks.length;i++){
+			if(blocks[i].y < 0){
+				game.style.display = "none";
+				var Next = [];
+				var groupBlocks = [];
+				var state = 0;
+			}
+		}
 	}
 
 	function RandomNum(min,max){
@@ -328,20 +364,23 @@ $(document).ready(function(){
 				}
 			}
 
+			//Check game state
+			gameState();
 
 			requestAnimationFrame(loop);
 		},100);
-	}
+	}	
 
 	loop();
 	document.addEventListener('keydown',function(event){
 		//left
 		if(event.keyCode === 37){
-			console.log(groupBlocks[0].x);
+			console.log(groupBlocks[0].sideState());
 			groupBlocks[0].leftMove();	
 		}
 		//right
 		if(event.keyCode === 39){
+			console.log(groupBlocks[0].sideState());
 			groupBlocks[0].rightMove();
 		}
 		/*//up

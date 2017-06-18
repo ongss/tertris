@@ -22,6 +22,7 @@
 	- class increed block speed 
 	- class rotate block
 	- class calculate score
+	- class game over >>done
 	- class reset game
 
 ==== source ====
