@@ -40,6 +40,29 @@ canvas{
 	height: 100%;
 	display: block;
 }
+#gameover{
+	width: 350px;
+	height: 170px;
+	position: absolute;
+	display: none;
+	border: solid white;
+	top: 50%;
+	left: 50%;
+	background: black;
+	transform: translate(-50%,-50%);
+	 z-index: 99;
+}
+#gameover>h3{
+	text-align: center;
+	color: white;
+}
+#gameover>p{
+	text-align: center;
+	color: white;
+}
+#restart:hover{
+	color: red;
+}
 @media screen and (max-width: 1150px) {
     #main{
     	left: 30%;

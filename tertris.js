@@ -2,6 +2,7 @@ $(document).ready(function(){
 
 	//Var
 	var game = document.getElementById("game");
+	var gameover = document.getElementById("gameover");
 
 	var main = document.getElementById("main");
 	var mainctx = main.getContext("2d");
@@ -18,8 +19,15 @@ $(document).ready(function(){
 	var groupBlocks = [];
 
 	var state = 0;
+	var score = 0;
+
+	var sidescore = document.getElementById("score");
+	var endScore = document.getElementById("endScore");
+
 	var nextBlock;
 	var nextBlockShow;
+
+	var restart = document.getElementById("restart");
 
 	colorList = ["blue","yellow","red","DarkOrange","GreenYellow","cyan","DarkMagenta"];
 
@@ -119,6 +127,8 @@ $(document).ready(function(){
 			var Blc2 = new block(this.pos+30,-30,this.color);
 			var Blc3 = new block(this.pos+60,-30,this.color);
 			var Blc4 = new block(this.pos+90,-30,this.color);
+			this.RPx = this.pos+30;
+			this.RPy = -30;
 			this.group.push(Blc1);
 			this.group.push(Blc2);
 			this.group.push(Blc3);
@@ -130,6 +140,8 @@ $(document).ready(function(){
 			var Blc2 = new block(this.pos+30,-30,this.color);
 			var Blc3 = new block(this.pos,-60,this.color);
 			var Blc4 = new block(this.pos+30,-60,this.color);
+			this.RPx = 0;
+			this.RPy = 0;
 			this.group.push(Blc1);
 			this.group.push(Blc2);
 			this.group.push(Blc3);
@@ -141,6 +153,8 @@ $(document).ready(function(){
 			var Blc2 = new block(this.pos+30,-30,this.color);
 			var Blc3 = new block(this.pos+60,-30,this.color);
 			var Blc4 = new block(this.pos+30,-60,this.color);
+			this.RPx = this.pos+30;
+			this.RPy = -30;
 			this.group.push(Blc1);
 			this.group.push(Blc2);
 			this.group.push(Blc3);
@@ -152,6 +166,8 @@ $(document).ready(function(){
 			var Blc2 = new block(this.pos+30,-30,this.color);
 			var Blc3 = new block(this.pos+60,-30,this.color);
 			var Blc4 = new block(this.pos+60,-60,this.color);
+			this.RPx = this.pos+30;
+			this.RPy = -30;
 			this.group.push(Blc1);
 			this.group.push(Blc2);
 			this.group.push(Blc3);
@@ -163,6 +179,34 @@ $(document).ready(function(){
 			var Blc2 = new block(this.pos+30,-60,this.color);
 			var Blc3 = new block(this.pos+30,-30,this.color);
 			var Blc4 = new block(this.pos+60,-30,this.color);
+			this.RPx = this.pos+30;
+			this.RPy = -60;
+			this.group.push(Blc1);
+			this.group.push(Blc2);
+			this.group.push(Blc3);
+			this.group.push(Blc4);
+		}
+		// invert L
+		if(this.type === 6){
+			var Blc1 = new block(this.pos,-30,this.color);
+			var Blc2 = new block(this.pos,-60,this.color);
+			var Blc3 = new block(this.pos+30,-30,this.color);
+			var Blc4 = new block(this.pos+60,-30,this.color);
+			this.RPx = this.pos+30;
+			this.RPy = -30;
+			this.group.push(Blc1);
+			this.group.push(Blc2);
+			this.group.push(Blc3);
+			this.group.push(Blc4);
+		}
+		// invert Z
+		if(this.type === 7){
+			var Blc1 = new block(this.pos,-30,this.color);
+			var Blc2 = new block(this.pos+30,-30,this.color);
+			var Blc3 = new block(this.pos+30,-60,this.color);
+			var Blc4 = new block(this.pos+60,-60,this.color);
+			this.RPx = this.pos+30
+			this.RPy = -60;
 			this.group.push(Blc1);
 			this.group.push(Blc2);
 			this.group.push(Blc3);
@@ -199,17 +243,54 @@ $(document).ready(function(){
 			}
 			return 0;
 		}
+		this.rotateState = function(){
+			if(this.type !== 2){
+				for(var i=0;i<this.group.length;i++){
+					var diffx = this.group[i].x-this.RPx;
+					var diffy = this.group[i].y-this.RPy;
+					var newy = 0;
+					var newx = 0;
+					if(diffx>=0){
+						newy-=abs(diffx);
+					}
+					if(diffx<0){
+						newy+=abs(diffx);
+					}
+					if(diffy>=0){
+						newx+=abs(diffy);
+					}
+					if(diffy<0){
+						newx-=abs(diffy);
+					}
+					//console.log("block",i," diffy : ",diffy,"diffx : ",diffx);
+					//console.log("block",i," newy : ",newy,"newx : ",newx);
+					newx += this.RPx;
+					newy += this.RPy;
+					for(var j=0;j<blocks.length;j++){
+						if(blocks[j].x === newx && blocks[j].y === newy){
+							return 1;
+						}	
+					}
+					if(newx >= 330 || newx <= 0 || newy >= 510){
+						return 1;
+					}
+				}
+				return 0;
+			}
+		}
 		this.fall = function(){
 			if(this.state() === 0){
 				for(var i=0;i<this.group.length;i++){
 					this.group[i].fall();
 				}
+				this.RPy+=30;
 			}
 			else{
 				for(var i=0;i<this.group.length;i++){
 					//console.log("x : ", this.group[i].x , "y : ",this.group[i].y);
 					blocks.push(this.group[i]);
 				}
+				//console.log("RPy : ",groupBlocks[0].RPy,"RPx : ",groupBlocks[0].RPx);
 				groupBlocks.splice(0,1);
 				genBlock();
 			}
@@ -251,6 +332,18 @@ $(document).ready(function(){
 				var Blc3 = new block(this.pos+30,60,this.color);
 				var Blc4 = new block(this.pos+60,60,this.color);
 			}
+			if(this.type === 6){
+				var Blc1 = new block(this.pos,60,this.color);
+				var Blc2 = new block(this.pos,30,this.color);
+				var Blc3 = new block(this.pos+30,60,this.color);
+				var Blc4 = new block(this.pos+60,60,this.color);
+			}
+			if(this.type === 7){
+				var Blc1 = new block(this.pos,60,this.color);
+				var Blc2 = new block(this.pos+30,60,this.color);
+				var Blc3 = new block(this.pos+30,30,this.color);
+				var Blc4 = new block(this.pos+60,30,this.color);
+			}
 			Blc1.drawNext();
 			Blc2.drawNext();
 			Blc3.drawNext();
@@ -261,12 +354,40 @@ $(document).ready(function(){
 				for(var i=0;i<this.group.length;i++){
 					this.group[i].leftMove();
 				}
+				this.RPx-=30;
 			}
 		}
 		this.rightMove = function(){
 			if(this.sideState() !==1 && this.sideState() !== 3){
 				for(var i=0;i<this.group.length;i++){
 					this.group[i].rightMove();
+				}
+				this.RPx+=30;
+			}
+		}
+		this.rotate = function(){
+			if(this.rotateState() === 0){
+				for(var i=0;i<this.group.length;i++){
+					var diffx = this.group[i].x-this.RPx;
+					var diffy = this.group[i].y-this.RPy;
+					var newy = 0;
+					var newx = 0;
+					if(diffx>=0){
+						newy-=abs(diffx);
+					}
+					if(diffx<0){
+						newy+=abs(diffx);
+					}
+					if(diffy>=0){
+						newx+=abs(diffy);
+					}
+					if(diffy<0){
+						newx-=abs(diffy);
+					}
+					newx += this.RPx;
+					newy += this.RPy;
+					this.group[i].x = newx;
+					this.group[i].y = newy;
 				}
 			}
 		}
@@ -276,7 +397,7 @@ $(document).ready(function(){
 	//Fumctions
 	function genBlock(){
 		if(state === 0){
-			var type = RandomNum(1,5);
+			var type = RandomNum(1,7);
 			var pos = 0;
 			if(type === 1){
 				pos = RandomNum(0,8)*30;
@@ -293,8 +414,9 @@ $(document).ready(function(){
 			var newBlock = nextBlock;
 			groupBlocks.push(newBlock);
 		}
-		var type = RandomNum(1,5);
+		var type = RandomNum(1,7);
 		var pos = 0;
+		//console.log(type);
 		if(type === 1){
 			pos = RandomNum(0,8)*30;
 		}
@@ -310,23 +432,41 @@ $(document).ready(function(){
 	function gameState(){
 		for(var i=0;i<blocks.length;i++){
 			if(blocks[i].y < 0){
-				game.style.display = "none";
-				var Next = [];
-				var groupBlocks = [];
-				var state = 0;
+				game.style.filter = "grayscale(100%)";
+				return 1;
 			}
 		}
+	}
+	function gameOver(){
+		gameover.style.display = "block";
+		Next = [];
+		groupBlocks = [];
+		blocks = [];
+		state = 0;
+	}
+
+	function Restart(){
+		gameover.style.display = "none";
+		game.style.filter = "none";
+		genBlock();
+		loop();
 	}
 
 	function RandomNum(min,max){
 		return Math.floor(Math.random()*(max-min+1))+min;
 	}
 
+	function abs(num){
+		if(num<0){
+			return -num;
+		}
+		return num;
+	}
+
+
 	
 	//Test
 	//var a = new blockGroup("red",3,150);
-	genBlock();
-
 
 	// MAIN()
 	function loop(){
@@ -364,32 +504,39 @@ $(document).ready(function(){
 				}
 			}
 
+			console.log(groupBlocks[0].rotateState());
+
 			//Check game state
-			gameState();
+			if(gameState() === 1){
+				gameOver();
+				return 0;
+			}
 
 			requestAnimationFrame(loop);
-		},100);
+		},1000);
 	}	
 
+	genBlock();
 	loop();
+	
+
 	document.addEventListener('keydown',function(event){
 		//left
 		if(event.keyCode === 37){
-			console.log(groupBlocks[0].sideState());
 			groupBlocks[0].leftMove();	
 		}
 		//right
 		if(event.keyCode === 39){
-			console.log(groupBlocks[0].sideState());
 			groupBlocks[0].rightMove();
 		}
-		/*//up
+		//up
 		if(event.keyCode === 38){
-
+			groupBlocks[0].rotate();
 		}
 		//down
 		if(event.keyCode === 40){
-
-		}*/
+			groupBlocks[0].fall();
+		}
 	});
+	restart.addEventListener('click',Restart);
 });
