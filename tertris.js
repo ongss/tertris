@@ -17,9 +17,12 @@ $(document).ready(function(){
 	var blocks = [];
 	var Next = [];
 	var groupBlocks = [];
+	var list = [];
+	var disappearList = [];
 
 	var state = 0;
 	var score = 0;
+	var startId = 0;
 
 	var sidescore = document.getElementById("score");
 	var endScore = document.getElementById("endScore");
@@ -31,27 +34,9 @@ $(document).ready(function(){
 
 	colorList = ["blue","yellow","red","DarkOrange","GreenYellow","cyan","DarkMagenta"];
 
-	//create table	
-	for(var i=0;i<360;i+=30){
-		for(var j=0;j<540;j+=30){
-			mainctx.beginPath();
-			mainctx.rect(i,j,30,30);
-			mainctx.strokeStyle = "gray";
-			mainctx.stroke();
-		}
-	}
-
-	for(var i=0;i<180;i+=30){
-		for(var j=0;j<120;j+=30){
-			nextctx.beginPath();
-			nextctx.rect(i,j,30,30);
-			nextctx.strokeStyle = "gray";
-			nextctx.stroke();
-		}
-	}
-
 	//Class
-	function block(x,y,color){
+	function block(x,y,color,id){
+		this.id = id;
 		this.x = x;
 		this.y = y;
 		this.color = color;
@@ -116,17 +101,18 @@ $(document).ready(function(){
 		}
 	}
 
-	function blockGroup(color,type,pos){
+	function blockGroup(color,type,pos,startId){
+		this.startId = startId;
 		this.color = color;
 		this.type = type;
 		this.pos = pos;
 		this.group = [];
 		//long
 		if(this.type === 1){
-			var Blc1 = new block(this.pos,-30,this.color);
-			var Blc2 = new block(this.pos+30,-30,this.color);
-			var Blc3 = new block(this.pos+60,-30,this.color);
-			var Blc4 = new block(this.pos+90,-30,this.color);
+			var Blc1 = new block(this.pos,-30,this.color,this.startId);
+			var Blc2 = new block(this.pos+30,-30,this.color,this.startId+1);
+			var Blc3 = new block(this.pos+60,-30,this.color,this.startId+2);
+			var Blc4 = new block(this.pos+90,-30,this.color,this.startId+3);
 			this.RPx = this.pos+30;
 			this.RPy = -30;
 			this.group.push(Blc1);
@@ -136,10 +122,10 @@ $(document).ready(function(){
 		}
 		//sqr
 		if(this.type === 2){
-			var Blc1 = new block(this.pos,-30,this.color);
-			var Blc2 = new block(this.pos+30,-30,this.color);
-			var Blc3 = new block(this.pos,-60,this.color);
-			var Blc4 = new block(this.pos+30,-60,this.color);
+			var Blc1 = new block(this.pos,-30,this.color,this.startId);
+			var Blc2 = new block(this.pos+30,-30,this.color,this.startId+1);
+			var Blc3 = new block(this.pos,-60,this.color,this.startId+2);
+			var Blc4 = new block(this.pos+30,-60,this.color,this.startId+3);
 			this.RPx = 0;
 			this.RPy = 0;
 			this.group.push(Blc1);
@@ -149,10 +135,10 @@ $(document).ready(function(){
 		}
 		//T
 		if(this.type === 3){
-			var Blc1 = new block(this.pos,-30,this.color);
-			var Blc2 = new block(this.pos+30,-30,this.color);
-			var Blc3 = new block(this.pos+60,-30,this.color);
-			var Blc4 = new block(this.pos+30,-60,this.color);
+			var Blc1 = new block(this.pos,-30,this.color,this.startId);
+			var Blc2 = new block(this.pos+30,-30,this.color,this.startId+1);
+			var Blc3 = new block(this.pos+60,-30,this.color,this.startId+2);
+			var Blc4 = new block(this.pos+30,-60,this.color,this.startId+3);
 			this.RPx = this.pos+30;
 			this.RPy = -30;
 			this.group.push(Blc1);
@@ -162,10 +148,10 @@ $(document).ready(function(){
 		}
 		//L
 		if(this.type === 4){
-			var Blc1 = new block(this.pos,-30,this.color);
-			var Blc2 = new block(this.pos+30,-30,this.color);
-			var Blc3 = new block(this.pos+60,-30,this.color);
-			var Blc4 = new block(this.pos+60,-60,this.color);
+			var Blc1 = new block(this.pos,-30,this.color,this.startId);
+			var Blc2 = new block(this.pos+30,-30,this.color,this.startId+1);
+			var Blc3 = new block(this.pos+60,-30,this.color,this.startId+2);
+			var Blc4 = new block(this.pos+60,-60,this.color,this.startId+3);
 			this.RPx = this.pos+30;
 			this.RPy = -30;
 			this.group.push(Blc1);
@@ -175,10 +161,10 @@ $(document).ready(function(){
 		}
 		//Z
 		if(this.type === 5){
-			var Blc1 = new block(this.pos,-60,this.color);
-			var Blc2 = new block(this.pos+30,-60,this.color);
-			var Blc3 = new block(this.pos+30,-30,this.color);
-			var Blc4 = new block(this.pos+60,-30,this.color);
+			var Blc1 = new block(this.pos,-60,this.color,this.startId);
+			var Blc2 = new block(this.pos+30,-60,this.color,this.startId+1);
+			var Blc3 = new block(this.pos+30,-30,this.color,this.startId+2);
+			var Blc4 = new block(this.pos+60,-30,this.color,this.startId+3);
 			this.RPx = this.pos+30;
 			this.RPy = -60;
 			this.group.push(Blc1);
@@ -188,10 +174,10 @@ $(document).ready(function(){
 		}
 		// invert L
 		if(this.type === 6){
-			var Blc1 = new block(this.pos,-30,this.color);
-			var Blc2 = new block(this.pos,-60,this.color);
-			var Blc3 = new block(this.pos+30,-30,this.color);
-			var Blc4 = new block(this.pos+60,-30,this.color);
+			var Blc1 = new block(this.pos,-30,this.color,this.startId);
+			var Blc2 = new block(this.pos,-60,this.color,this.startId+1);
+			var Blc3 = new block(this.pos+30,-30,this.color,this.startId+2);
+			var Blc4 = new block(this.pos+60,-30,this.color,this.startId+3);
 			this.RPx = this.pos+30;
 			this.RPy = -30;
 			this.group.push(Blc1);
@@ -201,10 +187,10 @@ $(document).ready(function(){
 		}
 		// invert Z
 		if(this.type === 7){
-			var Blc1 = new block(this.pos,-30,this.color);
-			var Blc2 = new block(this.pos+30,-30,this.color);
-			var Blc3 = new block(this.pos+30,-60,this.color);
-			var Blc4 = new block(this.pos+60,-60,this.color);
+			var Blc1 = new block(this.pos,-30,this.color,this.startId);
+			var Blc2 = new block(this.pos+30,-30,this.color,this.startId+1);
+			var Blc3 = new block(this.pos+30,-60,this.color,this.startId+2);
+			var Blc4 = new block(this.pos+60,-60,this.color,this.startId+3);
 			this.RPx = this.pos+30
 			this.RPy = -60;
 			this.group.push(Blc1);
@@ -289,8 +275,10 @@ $(document).ready(function(){
 				for(var i=0;i<this.group.length;i++){
 					//console.log("x : ", this.group[i].x , "y : ",this.group[i].y);
 					blocks.push(this.group[i]);
+					console.log(this.group[i].id);
 				}
 				//console.log("RPy : ",groupBlocks[0].RPy,"RPx : ",groupBlocks[0].RPx);
+				blocksFloor();
 				groupBlocks.splice(0,1);
 				genBlock();
 			}
@@ -406,7 +394,7 @@ $(document).ready(function(){
 				pos = RandomNum(0,9)*30;
 			}
 			var color = colorList[RandomNum(0,colorList.length-1)];
-			var newBlock = new blockGroup(color,type,pos);
+			var newBlock = new blockGroup(color,type,pos,startId);
 			groupBlocks.push(newBlock);
 			state = 1;
 		}
@@ -424,7 +412,8 @@ $(document).ready(function(){
 			pos = RandomNum(0,9)*30;
 		}
 		var color = colorList[RandomNum(0,colorList.length-1)];
-		nextBlock = new blockGroup(color,type,pos);
+		startId += 4;
+		nextBlock = new blockGroup(color,type,pos,startId);
 		nextBlockShow = new blockGroup(color,type,pos);
 
 	}
@@ -432,13 +421,15 @@ $(document).ready(function(){
 	function gameState(){
 		for(var i=0;i<blocks.length;i++){
 			if(blocks[i].y < 0){
-				game.style.filter = "grayscale(100%)";
 				return 1;
 			}
 		}
 	}
 	function gameOver(){
+		game.style.filter = "grayscale(80%)";
 		gameover.style.display = "block";
+		endScore.textContent = sidescore.textContent;
+		startId = 0;
 		Next = [];
 		groupBlocks = [];
 		blocks = [];
@@ -452,6 +443,77 @@ $(document).ready(function(){
 		loop();
 	}
 
+	function blocksFloor(){
+		list = [];
+		for(var j=0;j<20;j++){
+			var cnt = 0;
+			for(var i=0;i<blocks.length;i++){
+				if(blocks[i].y === j*30){
+					cnt+=1;
+				}
+			}
+			if(cnt === 12){
+				list.push(j);
+			}
+		}
+		for(var i=0;i<list.length;i++){
+			disappear(list,list.length);
+		}
+	}
+
+	function disappear(floorList){
+		disappearList = [];
+		for(var j=0;j<floorList.length;j++){
+			for(var i=0;i<blocks.length;i++){
+				if(blocks[i].y === floorList[j]*30){
+					disappearList.push(blocks[i].id);
+				}		
+			}
+		}
+		for(var i=0;i<disappearList.length;i++){
+			for(var j=0;j<blocks.length;j++){
+				if(blocks[j].id === disappearList[i]){
+					blocks[j].color = "white";
+				}
+			}
+		}
+		setTimeout(function(){
+			for(var i=0;i<disappearList.length;i++){
+				for(var j=0;j<blocks.length;j++){
+					if(blocks[j].id === disappearList[i]){
+						blocks.splice(j,1);
+					}
+				}
+			}
+		},200);
+		setTimeout(function(){
+			setScore(floorList.length);
+		},200);
+		setTimeout(function(){
+			for(var i=0;i<floorList.length;i++){
+				oneFloorFall(floorList[i]);
+			}
+		},210);
+	}
+
+	function oneFloorFall(floor){
+		for(var i=0;i<blocks.length;i++){
+			if(blocks[i].y < floor*30){
+				blocks[i].y+=30;
+			}
+		}
+	}
+
+	function setScore(mul){
+		mul = mul*10;
+		score += mul*mul;
+		var sub = ""
+		for(var i=0;i<(7-score.toString().length);i++){
+			sub+="0";
+		}
+		sidescore.textContent = "score : "+sub+score.toString();
+	}
+	
 	function RandomNum(min,max){
 		return Math.floor(Math.random()*(max-min+1))+min;
 	}
@@ -464,9 +526,6 @@ $(document).ready(function(){
 	}
 
 
-	
-	//Test
-	//var a = new blockGroup("red",3,150);
 
 	// MAIN()
 	function loop(){
@@ -504,7 +563,7 @@ $(document).ready(function(){
 				}
 			}
 
-			console.log(groupBlocks[0].rotateState());
+			//console.log(groupBlocks[0].rotateState());
 
 			//Check game state
 			if(gameState() === 1){
@@ -513,11 +572,10 @@ $(document).ready(function(){
 			}
 
 			requestAnimationFrame(loop);
-		},1000);
+		},100);
 	}	
 
-	genBlock();
-	loop();
+	Restart();
 	
 
 	document.addEventListener('keydown',function(event){

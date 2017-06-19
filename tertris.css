@@ -17,7 +17,7 @@ canvas{
 }
 #status{
 	width: 300px;
-	margin: 40px;
+	margin: 0 40px;
 	float: right;
 	border: solid white;
 }
