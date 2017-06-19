@@ -5,25 +5,25 @@
 	- canvas for game display >>done
 	- canvas for next block display >>done
 	- on display console
-	- gameover page
+	- gameover page >> done
 < css part >
-	- all font style
-	- set all position
-	- color of block : light blue ,blue ,yellow ,red ,orange ,pink ,green 
+	- all font style >>done
+	- set all position >>done
+	- color of block : light blue ,blue ,yellow ,red ,orange ,pink ,green >>done 
 < js part > 
 	- game display size 12*20 >>done
 	- five kind of blocks >>done
 	- class one block >>done
-	- class disappear
+	- class disappear >>done
 	- class random gen next block >> done
 	- class kb input for move block >> done
 	- class comming block >> done
 	- class block fall >>done
-	- class increed block speed 
-	- class rotate block
-	- class calculate score
+	- class increed block speed >>done 
+	- class rotate block >>done
+	- class calculate score >>done
 	- class game over >>done
-	- class reset game
+	- class reset game >>done
 
 ==== source ====
 https://www.w3schools.com/jquery/

@@ -32,6 +32,8 @@ $(document).ready(function(){
 
 	var restart = document.getElementById("restart");
 
+	var fallSpeed = 500;
+
 	colorList = ["blue","yellow","red","DarkOrange","GreenYellow","cyan","DarkMagenta"];
 
 	//Class
@@ -101,14 +103,14 @@ $(document).ready(function(){
 		}
 	}
 
-	function blockGroup(color,type,pos,startId){
+	function blockGroup(type,pos,startId){
 		this.startId = startId;
-		this.color = color;
 		this.type = type;
 		this.pos = pos;
 		this.group = [];
 		//long
 		if(this.type === 1){
+			this.color = "cyan";
 			var Blc1 = new block(this.pos,-30,this.color,this.startId);
 			var Blc2 = new block(this.pos+30,-30,this.color,this.startId+1);
 			var Blc3 = new block(this.pos+60,-30,this.color,this.startId+2);
@@ -122,6 +124,7 @@ $(document).ready(function(){
 		}
 		//sqr
 		if(this.type === 2){
+			this.color = "blue";
 			var Blc1 = new block(this.pos,-30,this.color,this.startId);
 			var Blc2 = new block(this.pos+30,-30,this.color,this.startId+1);
 			var Blc3 = new block(this.pos,-60,this.color,this.startId+2);
@@ -135,6 +138,7 @@ $(document).ready(function(){
 		}
 		//T
 		if(this.type === 3){
+			this.color = "DeepPink";
 			var Blc1 = new block(this.pos,-30,this.color,this.startId);
 			var Blc2 = new block(this.pos+30,-30,this.color,this.startId+1);
 			var Blc3 = new block(this.pos+60,-30,this.color,this.startId+2);
@@ -148,6 +152,7 @@ $(document).ready(function(){
 		}
 		//L
 		if(this.type === 4){
+			this.color = "DarkOrange";
 			var Blc1 = new block(this.pos,-30,this.color,this.startId);
 			var Blc2 = new block(this.pos+30,-30,this.color,this.startId+1);
 			var Blc3 = new block(this.pos+60,-30,this.color,this.startId+2);
@@ -161,6 +166,7 @@ $(document).ready(function(){
 		}
 		//Z
 		if(this.type === 5){
+			this.color = "red";
 			var Blc1 = new block(this.pos,-60,this.color,this.startId);
 			var Blc2 = new block(this.pos+30,-60,this.color,this.startId+1);
 			var Blc3 = new block(this.pos+30,-30,this.color,this.startId+2);
@@ -174,6 +180,7 @@ $(document).ready(function(){
 		}
 		// invert L
 		if(this.type === 6){
+			this.color = "GreenYellow";
 			var Blc1 = new block(this.pos,-30,this.color,this.startId);
 			var Blc2 = new block(this.pos,-60,this.color,this.startId+1);
 			var Blc3 = new block(this.pos+30,-30,this.color,this.startId+2);
@@ -187,6 +194,7 @@ $(document).ready(function(){
 		}
 		// invert Z
 		if(this.type === 7){
+			this.color = "green";
 			var Blc1 = new block(this.pos,-30,this.color,this.startId);
 			var Blc2 = new block(this.pos+30,-30,this.color,this.startId+1);
 			var Blc3 = new block(this.pos+30,-60,this.color,this.startId+2);
@@ -275,7 +283,6 @@ $(document).ready(function(){
 				for(var i=0;i<this.group.length;i++){
 					//console.log("x : ", this.group[i].x , "y : ",this.group[i].y);
 					blocks.push(this.group[i]);
-					console.log(this.group[i].id);
 				}
 				//console.log("RPy : ",groupBlocks[0].RPy,"RPx : ",groupBlocks[0].RPx);
 				blocksFloor();
@@ -393,8 +400,7 @@ $(document).ready(function(){
 			else{
 				pos = RandomNum(0,9)*30;
 			}
-			var color = colorList[RandomNum(0,colorList.length-1)];
-			var newBlock = new blockGroup(color,type,pos,startId);
+			var newBlock = new blockGroup(type,pos,startId);
 			groupBlocks.push(newBlock);
 			state = 1;
 		}
@@ -411,10 +417,9 @@ $(document).ready(function(){
 		else{
 			pos = RandomNum(0,9)*30;
 		}
-		var color = colorList[RandomNum(0,colorList.length-1)];
 		startId += 4;
-		nextBlock = new blockGroup(color,type,pos,startId);
-		nextBlockShow = new blockGroup(color,type,pos);
+		nextBlock = new blockGroup(type,pos,startId);
+		nextBlockShow = new blockGroup(type,pos);
 
 	}
 
@@ -433,10 +438,11 @@ $(document).ready(function(){
 		Next = [];
 		groupBlocks = [];
 		blocks = [];
-		state = 0;
+		state = -1;
 	}
 
 	function Restart(){
+		state = 0;
 		gameover.style.display = "none";
 		game.style.filter = "none";
 		genBlock();
@@ -456,9 +462,7 @@ $(document).ready(function(){
 				list.push(j);
 			}
 		}
-		for(var i=0;i<list.length;i++){
-			disappear(list,list.length);
-		}
+		disappear(list,list.length);
 	}
 
 	function disappear(floorList){
@@ -497,8 +501,9 @@ $(document).ready(function(){
 	}
 
 	function oneFloorFall(floor){
+		console.log(floor);
 		for(var i=0;i<blocks.length;i++){
-			if(blocks[i].y < floor*30){
+			if(blocks[i].y <= floor*30){
 				blocks[i].y+=30;
 			}
 		}
@@ -513,7 +518,54 @@ $(document).ready(function(){
 		}
 		sidescore.textContent = "score : "+sub+score.toString();
 	}
-	
+
+	function fall(){
+		setTimeout(function(){
+			groupBlocks[0].fall();
+			//Check game state
+			if(gameState() === 1){
+				gameOver();
+				return 0;
+			}
+			requestAnimationFrame(fall);
+		},fallSpeed);
+	}
+
+	function draw(){
+		if(state === -1){
+			return 0;
+		}
+		mainctx.fillStyle = 'rgba(0,0,0)';
+		mainctx.fillRect(0,0,360,540);
+		groupBlocks[0].draw();
+		for(var i=0;i<blocks.length;i++){
+			blocks[i].draw();
+		}
+		//create table
+		for(var i=0;i<360;i+=30){
+			for(var j=0;j<540;j+=30){
+				mainctx.beginPath();
+				mainctx.rect(i,j,30,30);
+				mainctx.strokeStyle = "gray";
+				mainctx.stroke();
+			}
+		}
+
+		//NEXT DISPLAY
+		nextctx.fillStyle = 'rgba(0,0,0)';
+		nextctx.fillRect(0,0,180,120);
+		nextBlockShow.drawNext();
+		for(var i=0;i<180;i+=30){
+			for(var j=0;j<120;j+=30){
+				nextctx.beginPath();
+				nextctx.rect(i,j,30,30);
+				nextctx.strokeStyle = "gray";
+				nextctx.stroke();
+			}
+		}
+		requestAnimationFrame(draw);
+	}
+
 	function RandomNum(min,max){
 		return Math.floor(Math.random()*(max-min+1))+min;
 	}
@@ -525,58 +577,13 @@ $(document).ready(function(){
 		return num;
 	}
 
-
-
 	// MAIN()
-	function loop(){
-		//reset canvas
-		setTimeout(function(){
-
-			//MAIN DISPLAY
-			mainctx.fillStyle = 'rgba(0,0,0)';
-			mainctx.fillRect(0,0,360,540);
-			groupBlocks[0].fall();
-			groupBlocks[0].draw();
-			for(var i=0;i<blocks.length;i++){
-				blocks[i].draw();
-			}
-			//create table
-			for(var i=0;i<360;i+=30){
-				for(var j=0;j<540;j+=30){
-					mainctx.beginPath();
-					mainctx.rect(i,j,30,30);
-					mainctx.strokeStyle = "gray";
-					mainctx.stroke();
-				}
-			}
-
-			//NEXT DISPLAY
-			nextctx.fillStyle = 'rgba(0,0,0)';
-			nextctx.fillRect(0,0,180,120);
-			nextBlockShow.drawNext();
-			for(var i=0;i<180;i+=30){
-				for(var j=0;j<120;j+=30){
-					nextctx.beginPath();
-					nextctx.rect(i,j,30,30);
-					nextctx.strokeStyle = "gray";
-					nextctx.stroke();
-				}
-			}
-
-			//console.log(groupBlocks[0].rotateState());
-
-			//Check game state
-			if(gameState() === 1){
-				gameOver();
-				return 0;
-			}
-
-			requestAnimationFrame(loop);
-		},100);
+	function loop(){	
+		fall();
+		draw();		
 	}	
 
 	Restart();
-	
 
 	document.addEventListener('keydown',function(event){
 		//left
@@ -593,8 +600,18 @@ $(document).ready(function(){
 		}
 		//down
 		if(event.keyCode === 40){
-			groupBlocks[0].fall();
+			fallSpeed = 50;
+		}
+		if(event.keyCode === 32){
+			for(var i=0;i<blocks.length;i++){
+				console.log("y : ",blocks[i].y,"x : ",blocks[i].x);
+			}
 		}
 	});
+	document.addEventListener('keyup',function(event){
+		if(event.keyCode === 40){
+			fallSpeed = 500;
+		}
+	})
 	restart.addEventListener('click',Restart);
 });
