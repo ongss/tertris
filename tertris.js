@@ -265,7 +265,7 @@ $(document).ready(function(){
 							return 1;
 						}	
 					}
-					if(newx >= 330 || newx <= 0 || newy >= 510){
+					if(newx > 330 || newx < 0 || newy >= 510){
 						return 1;
 					}
 				}
